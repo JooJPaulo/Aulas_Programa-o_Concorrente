@@ -1,33 +1,62 @@
 package atividadePratica;
 
 public class Banco {
+    public static void main(String[] args) {
+        // Inicialização das contas dos clientes
+        Contas[] contasClientes = new Contas[5];
+        for (int i = 0; i < contasClientes.length; i++) {
+            contasClientes[i] = new Contas(1000);
+        }
 
-	public static void main(String[] args) {
-		
-		//Criação das contas, divididas em contas de clientes e contas de funcionários
-		Contas contaCliente = new Contas(1000, 0);
-		Contas contaFuncionario = new Contas(1400, 0);
+        // Inicialização das contas dos funcionários
+        Contas[] contasFuncionarios = new Contas[4];
+        for (int i = 0; i < contasFuncionarios.length; i++) {
+            contasFuncionarios[i] = new Contas(0); // As contas dos funcionários serão atualizadas pelas lojas
+        }
 
-		//Criação dos clientes e funcionários
-		Clientes cliente1 = new Clientes(contaCliente);
-		Clientes cliente2 = new Clientes(contaCliente);
-		Clientes cliente3 = new Clientes(contaCliente);
-		Clientes cliente4 = new Clientes(contaCliente);
-		Clientes cliente5 = new Clientes(contaCliente);
-		Funcionarios funcionario1 = new Funcionarios(contaFuncionario);
-		Funcionarios funcionario2 = new Funcionarios(contaFuncionario);
-		Funcionarios funcionario3 = new Funcionarios(contaFuncionario);
-		Funcionarios funcionario4 = new Funcionarios(contaFuncionario);
+        // Inicialização das contas das lojas
+        Contas[] contasLojas = new Contas[2];
+        for (int i = 0; i < contasLojas.length; i++) {
+            contasLojas[i] = new Contas(0); // As contas das lojas serão atualizadas pelos clientes
+        }
 
-		//Criação das lojas
-		Lojas loja1 = new Lojas();
-		Lojas loja2 = new Lojas();
+        // Criação das threads para os clientes
+        Clientes[] clientes = new Clientes[5];
+        for (int i = 0; i < clientes.length; i++) {
+            clientes[i] = new Clientes(contasClientes[i], "cliente" + (i + 1));
+            clientes[i].start();
+        }
 
-		//Divisão dos funcionários em lojas
-		loja1.loja1(funcionario1, funcionario2);
-		loja2.loja2(funcionario3, funcionario4);
-		
+        // Criação das lojas e threads para os funcionários
+        Funcionarios[] funcionariosLoja1 = new Funcionarios[2];
+        Funcionarios[] funcionariosLoja2 = new Funcionarios[2];
+        for (int i = 0; i < 2; i++) {
+            funcionariosLoja1[i] = new Funcionarios(contasLojas[0], contasFuncionarios[i], "funcionário loja 1 " + (i + 1)); // Conta de investimento inicializada com 0
+            funcionariosLoja2[i] = new Funcionarios(contasLojas[1], contasFuncionarios[i + 2], "funcionário loja 2 " + (i + 1)); // Conta de investimento inicializada com 0
+        }
 
+        Lojas loja1 = new Lojas(contasLojas[0], funcionariosLoja1, "loja 1");
+        Lojas loja2 = new Lojas(contasLojas[1], funcionariosLoja2, "loja 2");
+
+        // Laço para pagar os salários das lojas
+        boolean algumFuncionarioRecebeuSalario = true;
+        while (algumFuncionarioRecebeuSalario) {
+            algumFuncionarioRecebeuSalario = false;
+            loja1.pagarSalarios();
+            loja2.pagarSalarios();
+            algumFuncionarioRecebeuSalario = loja1.algumFuncionarioRecebeuSalario() || loja2.algumFuncionarioRecebeuSalario();
+        }
+
+        // Verificação dos saldos finais
+        System.out.println("Saldos finais:");
+        for (int i = 0; i < contasClientes.length; i++) {
+            System.out.println("Cliente " + (i + 1 ) + ": " + contasClientes[i].getSaldo());
+		}
+		for (int i = 0; i < contasFuncionarios.length; i++) {
+			System.out.println("Funcionário " + (i + 1) + ": " + contasFuncionarios[i].getSaldo());
+		}
+		for (int i = 0; i < contasLojas.length; i++) {
+			System.out.println("Loja " + (i + 1) + ": " + contasLojas[i].getSaldo());
+		}
 	}
-
 }

@@ -1,15 +1,28 @@
 package atividadePratica;
 
-public class Funcionarios {
+public class Funcionarios extends Thread {
+    private Contas contaSalario;
+    private Contas contaInvestimento;
+    private String funcionarioNome;
 
-    private Contas contaFuncionario;
-
-    public Funcionarios(Contas contaFuncionario) {
-        this.contaFuncionario = contaFuncionario;
+    public Funcionarios(Contas contaSalario, Contas contaInvestimento, String funcionarioNome) {
+        this.contaSalario = contaSalario;
+        this.contaInvestimento = contaInvestimento;
+        this.funcionarioNome = funcionarioNome;
     }
 
-    public Contas getContaFuncionario() {
-        return contaFuncionario;
+    @Override
+    public void run() {
+        synchronized (contaSalario) {
+            double salario = 1400.00;
+            contaSalario.depositar(salario);
+            double investimento = salario * 0.2;
+            contaInvestimento.depositar(investimento);
+            System.out.println("Funcionário " + funcionarioNome + " recebeu salário: +" + salario + " e depositou " + investimento + " em investimento");
+        }
     }
 
+    public void setContaSalario(Contas conta) {
+        this.contaSalario = conta;
+    }
 }

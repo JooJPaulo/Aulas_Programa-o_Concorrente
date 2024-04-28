@@ -1,41 +1,23 @@
 package atividadePratica;
 
 public class Contas {
-
-    //Definição do tipo de conta
-    private int tipoConta;
-    //Saldo da conta
     private double saldo;
 
-    //Construtor da classe
-    public Contas(int tipoConta, double saldo) {
-        this.tipoConta = tipoConta;
+    public Contas(double saldo) {
         this.saldo = saldo;
     }
 
-    //Método para obter o saldo da conta
     public double getSaldo() {
         return saldo;
     }
 
-    //Método para alterar o saldo da conta
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
-    }
-
-    //Método para obter o tipo da conta
-    public int getTipoConta() {
-        return tipoConta;
-    }
-
-    //Método para alterar o tipo da conta
-    public void setTipoConta(int tipoConta) {
-        this.tipoConta = tipoConta;
-    }
-
-    //Método para depositar dinheiro na conta
-    public void depositar(double valor) {
+    public synchronized void depositar(double valor) {
         saldo += valor;
+        System.out.println("Depósito: +" + valor + ", Saldo: " + saldo);
     }
 
+    public synchronized void compra(double valor, String tipoTransacao) {
+        saldo -= valor;
+        System.out.println(tipoTransacao + ": -" + valor + ", Saldo: " + saldo);
+    }
 }
