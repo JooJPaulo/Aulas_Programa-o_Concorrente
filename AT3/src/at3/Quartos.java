@@ -1,75 +1,46 @@
 package at3;
+import java.util.concurrent.locks.ReentrantLock;
 
-public class Quartos {
+class Quartos {
+    private final ReentrantLock lock = new ReentrantLock();
+    private boolean ocupado = false;
+    private boolean limpo = true;
 
-    // Criação dos quartos, que são ocupados por hóspedes, limpos por camareiras e gerenciados por recepcionistas
-    private int qtd = 0;
-    
     // Métodos de entrada e saída de hóspedes nos quartos
-    public synchronized void entrar() {
-        while(qtd == 10) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void entrar() throws InterruptedException {
+        lock.lock();
+        try {
+            while (!limpo) {
+                lock.wait();
             }
+            ocupado = true;
+        } finally {
+            lock.unlock();
         }
-        qtd++;
-        System.out.println("Hospede entrou. Qtd de hospedes: " + qtd);
-        notifyAll();
     }
-    
-    public synchronized void sair() {
-        while(qtd == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+    public void sair() {
+        lock.lock();
+        try {
+            ocupado = false;
+            limpo = false;
+            lock.notifyAll();
+        } finally {
+            lock.unlock();
         }
-        qtd--;
-        System.out.println("Hospede saiu. Qtd de hospedes: " + qtd);
-        notifyAll();
     }
 
     // Métodos de limpeza dos quartos pelas camareiras, os hóspedes são retirados antes da limpeza
-    public synchronized void limpar() {
-        while(qtd > 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public void limpar() throws InterruptedException {
+        lock.lock();
+        try {
+            while (ocupado) {
+                lock.wait();
             }
+            limpo = true;
+            lock.notifyAll();
+        } finally {
+            lock.unlock();
         }
-        System.out.println("Camareira limpou o quarto.");
-        notifyAll();
     }
-
-    // Métodos de check-in e check-out dos quartos pelos recepcionistas, que avisam os hóspedes quando um quarto está disponível ou não
-    public synchronized void checkIn() {
-        while(qtd == 10) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        qtd++;
-        System.out.println("Recepcionista fez check-in. Qtd de hospedes: " + qtd);
-        notifyAll();
-    }
-
-    public synchronized void checkOut() {
-        while(qtd == 0) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        qtd--;
-        System.out.println("Recepcionista fez check-out. Qtd de hospedes: " + qtd);
-        notifyAll();
-    }
-
 }

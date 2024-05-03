@@ -1,19 +1,22 @@
 package at3;
 
-public class Recepcionistas extends Thread {
+class Recepcionistas extends Thread {
+    private final Quartos[] quartos;
 
-    // Criação dos recepcionistas, que fazem check-in e check-out dos hóspedes
-    private Quartos quartos;
-    
-    public Recepcionistas(Quartos quartos) {
+    public Recepcionistas(Quartos[] quartos) {
         this.quartos = quartos;
     }
-    
+
     @Override
     public void run() {
-        while(true) {
-            quartos.checkIn();
-            quartos.checkOut();
+        try {
+            for (Quartos quarto : quartos) {
+                quarto.entrar();  // Faz o check-in do hóspede
+                sleep(500);  // Simula o tempo que o recepcionista leva para fazer o check-in
+                quarto.sair();  // Faz o check-out do hóspede
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

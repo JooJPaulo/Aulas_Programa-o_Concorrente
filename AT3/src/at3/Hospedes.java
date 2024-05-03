@@ -1,20 +1,22 @@
 package at3;
 
-public class Hospedes extends Thread {
-    
-    // Criação dos hóspedes, que entram e saem dos quartos
-    private Quartos quartos;
-    
-    public Hospedes(Quartos quartos) {
+class Hospedes extends Thread {
+    private final Quartos[] quartos;
+
+    public Hospedes(Quartos[] quartos) {
         this.quartos = quartos;
     }
-    
+
     @Override
     public void run() {
-        while(true) {
-            quartos.entrar();
-            quartos.sair();
+        try {
+            for (Quartos quarto : quartos) {
+                quarto.entrar();
+                sleep(1000);  // Simula o tempo que o hóspede passa no quarto
+                quarto.sair();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
-
 }
