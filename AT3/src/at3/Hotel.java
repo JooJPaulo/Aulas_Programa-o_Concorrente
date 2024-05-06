@@ -1,36 +1,33 @@
 package at3;
 
-public class Hotel {
+import java.util.ArrayList;
+import java.util.List;
 
+public class Hotel {
     public static final int NUM_QUARTOS = 10;
     public static final int NUM_HOSPEDES = 50;
     public static final int NUM_CAMAREIRAS = 10;
     public static final int NUM_RECEPCIONISTAS = 5;
 
     public static void main(String[] args) {
-        
-        //Inicialização das entidades do hotel
-        Quartos[] quartos = new Quartos[NUM_QUARTOS];
+        List<Quartos> quartos = new ArrayList<>();
         for (int i = 0; i < NUM_QUARTOS; i++) {
-            quartos[i] = new Quartos();
+            quartos.add(new Quartos(i + 1));
         }
 
-        Hospedes[] hospedes = new Hospedes[NUM_HOSPEDES];
+        Recepcionistas recepcionista = new Recepcionistas(quartos);
+        recepcionista.start();
+
+        Camareiras camareiras = new Camareiras(quartos);
+        camareiras.start();
+
+        List<Hospedes> hospedes = new ArrayList<>();
         for (int i = 0; i < NUM_HOSPEDES; i++) {
-            hospedes[i] = new Hospedes(quartos);
-            hospedes[i].start();
+            hospedes.add(new Hospedes(quartos, recepcionista));
         }
 
-        Camareiras[] camareiras = new Camareiras[NUM_CAMAREIRAS];
-        for (int i = 0; i < NUM_CAMAREIRAS; i++) {
-            camareiras[i] = new Camareiras(quartos);
-            camareiras[i].start();
-        }
-
-        Recepcionistas[] recepcionistas = new Recepcionistas[NUM_RECEPCIONISTAS];
-        for (int i = 0; i < NUM_RECEPCIONISTAS; i++) {
-            recepcionistas[i] = new Recepcionistas(quartos);
-            recepcionistas[i].start();
+        for (Hospedes hospede : hospedes) {
+            hospede.start();
         }
     }
 }
